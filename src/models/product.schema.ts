@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
-
-export type ProductDocument = Product & Document;
+import { Category } from 'src/models/category.schema';
 
 @Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 export class Product {
@@ -24,8 +23,12 @@ export class Product {
     @Prop()
     title: string;
 
-    @Prop()
-    category: string;
+    @Prop({
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+        index: true
+    })
+    category: Category;
 
 }
 

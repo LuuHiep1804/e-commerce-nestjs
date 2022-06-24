@@ -1,13 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Product, ProductDocument } from 'src/models/product.schema';
+import { Product } from 'src/types/product';
 import { FilterProductDTO } from './filter-product.dto';
 import { CreateProductDTO } from './product.dto';
 
 @Injectable()
 export class ProductService {
-    constructor(@InjectModel('Product') private readonly productModel: Model<ProductDocument>) {}
+    constructor(@InjectModel('Product') private readonly productModel: Model<Product>) {}
 
     async getFilteredProducts(filterProductDTO: FilterProductDTO): Promise<Product[]> {
         const {category, search} = filterProductDTO;
@@ -20,18 +20,18 @@ export class ProductService {
         }
 
         if(category) {
-            products = products.filter(product => product.category === category)
+            products = products.filter(product => product.category.name === category);
         }
 
         return products;
     }
 
     async findAllProducts(): Promise<Product[]> {
-        return await this.productModel.find().exec();
+        return await this.productModel.find().populate('category');
     }
 
     async findById(id: string): Promise<Product> {
-        const product = await this.productModel.findById(id);
+        const product = await this.productModel.findById(id).populate('category');
         if(!product) {
             throw new HttpException('Product not found', HttpStatus.BAD_REQUEST);
         }

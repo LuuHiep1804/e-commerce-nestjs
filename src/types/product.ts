@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+import { Category } from "./category";
 
 export interface Product extends Document {
     name: string;
@@ -7,5 +8,5 @@ export interface Product extends Document {
     quantityInStock: number;
     image: string;
     title: string;
-    category: string;
+    category: Category;
 }

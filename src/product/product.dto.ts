@@ -1,3 +1,5 @@
+import { Category } from "src/types/category";
+
 export class CreateProductDTO {
     name: string;
     description: string;
@@ -5,5 +7,5 @@ export class CreateProductDTO {
     quantityInStock: number;
     image: string;
     title: string;
-    category: string;
+    category: Category;
 }
