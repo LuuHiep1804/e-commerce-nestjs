@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Category } from 'src/models/category.schema';
+import { Category } from 'src/types/category';
 import { CategoryDTO } from './category.dto';
 
 @Injectable()
