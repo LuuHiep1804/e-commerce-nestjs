@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { FilterProductDTO } from './filter-product.dto';
 import { CreateProductDTO } from './product.dto';
 import { ProductService } from './product.service';
 
@@ -7,9 +8,14 @@ export class ProductController {
     constructor(private productService: ProductService) {}
 
     @Get('/')
-    async getProducts() {
-        const products = await this.productService.findAllProducts();
-        return products;
+    async getProducts(@Query() filterProductDTO: FilterProductDTO) {
+        if(Object.keys(filterProductDTO).length) {
+            const filteredProducts = await this.productService.getFilteredProducts(filterProductDTO);
+            return filteredProducts;
+        }else {
+            const products = await this.productService.findAllProducts();
+            return products;
+        }
     }
 
     @Get('/:id')
