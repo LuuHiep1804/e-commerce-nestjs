@@ -4,5 +4,5 @@ export class CreateUserDTO {
     email: string;
     phone: string;
     address: string;
-    // roles: string[];
+    roles: string[];
 }

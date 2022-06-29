@@ -6,5 +6,5 @@ export interface User extends Document {
     email: string;
     phone: string;
     address: string;
-    // roles: string[];
+    roles: string[];
 }
