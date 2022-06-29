@@ -7,7 +7,7 @@ export class Item {
         type: SchemaTypes.ObjectId,
         ref: 'Product'
     })
-    ProductId: string;
+    productId: string;
 
     @Prop()
     name: string;
