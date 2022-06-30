@@ -34,8 +34,7 @@ export class CartService {
       }
     
       async addItemToCart(userId: string, itemDTO: ItemDTO): Promise<Cart> {
-        const { productId, quantity, price } = itemDTO;
-        const subTotalPrice = quantity * price;
+        const { productId, quantity } = itemDTO;
         
         let cart = await this.cartModel.findOne({ userId: userId });
         if(!cart) {
@@ -53,7 +52,14 @@ export class CartService {
         }else {
           const itemIndex = cart.items.findIndex((item) => item.productId == productId);
           if(itemIndex == -1) {
-            cart.items.push({...itemDTO, subTotalPrice});
+            const newItem = {
+              productId: productId,
+              name: product.name,
+              quantity: quantity,
+              price: product.price
+            }
+            const subTotalPrice = quantity * newItem.price;
+            cart.items.push({...newItem, subTotalPrice});
             this.recalculateCart(cart);
           }else{
             let item = cart.items[itemIndex];

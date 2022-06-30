@@ -5,14 +5,17 @@ import { SchemaTypes } from "mongoose";
 export class Item {
     @Prop({
         type: SchemaTypes.ObjectId,
-        ref: 'Product'
+        ref: 'Product',
+        required: true
     })
     productId: string;
 
     @Prop()
     name: string;
 
-    @Prop()
+    @Prop({
+        required: true
+    })
     quantity: number;
 
     @Prop()
