@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
@@ -33,6 +33,14 @@ export class CartController {
     @Delete('/:id')
     async deleteCart(@Param('id') userId: string) {
         const cart = await this.cartService.deleteCart(userId);
+        return cart;
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.User)
+    @Get('/:id')
+    async getCart(@Param('id') userId: string) {
+        const cart = await this.cartService.getCart(userId);
         return cart;
     }
 
