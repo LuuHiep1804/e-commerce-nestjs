@@ -1,30 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Product } from 'src/types/product';
 import { Cart } from '../types/cart';
 import { ItemDTO } from './item.dto';
 
 @Injectable()
 export class CartService {
-    constructor(@InjectModel('Cart') private readonly cartModel: Model<Cart>) {}
-
-    async createCart(userId: string, itemDTO: ItemDTO, subTotalPrice: number, totalPrice: number): Promise<Cart> {
-        const newCart = await this.cartModel.create({
-          userId,
-          items: [{ ...itemDTO, subTotalPrice }],
-          totalPrice
-        });
-        await newCart.save();
-        return newCart;
-      }
+    constructor(@InjectModel('Cart') private readonly cartModel: Model<Cart>,
+                @InjectModel('Product') private readonly productModel: Model<Product>) {}
     
       async getCart(userId: string): Promise<Cart> {
         const cart = await this.cartModel.findOne({ userId });
+        if(!cart) {
+          throw new NotFoundException('Cart does not exist');
+        }
         return cart;
       }
     
       async deleteCart(userId: string): Promise<Cart> {
         const deletedCart = await this.cartModel.findOneAndRemove({ userId });
+        if(!deletedCart) {
+          throw new NotFoundException('Cart does not exist');
+        }
         return deletedCart;
       }
     
@@ -39,37 +37,50 @@ export class CartService {
         const { productId, quantity, price } = itemDTO;
         const subTotalPrice = quantity * price;
         
-        const cart = await this.cartModel.findOne({ userId: userId });
+        let cart = await this.cartModel.findOne({ userId: userId });
+        if(!cart) {
+          let totalPrice = 0;
+          cart = await this.cartModel.create({
+            userId,
+            items: [],
+            totalPrice
+          });
+        }
 
-        if (cart) {
+        const product = await this.productModel.findById(productId);
+        if(!product) {
+          throw new NotFoundException('Product does not exist');
+        }else {
           const itemIndex = cart.items.findIndex((item) => item.productId == productId);
-    
-          if (itemIndex > -1) {
+          if(itemIndex == -1) {
+            cart.items.push({...itemDTO, subTotalPrice});
+            this.recalculateCart(cart);
+          }else{
             let item = cart.items[itemIndex];
             item.quantity = Number(item.quantity) + Number(quantity);
             item.subTotalPrice = item.quantity * item.price;
-    
+
             cart.items[itemIndex] = item;
             this.recalculateCart(cart);
-            return await cart.save();
-          } else {
-            cart.items.push({ ...itemDTO, subTotalPrice });
-            this.recalculateCart(cart);
-            return await cart.save();
           }
-        } else {
-          const newCart = await this.createCart(userId, itemDTO, subTotalPrice, subTotalPrice);
-          return newCart;
+          const updateCart = await this.cartModel.findOneAndUpdate({userId: userId}, cart, {new: true});
+          return updateCart;
         }
       }
     
       async removeItemFromCart(userId: string, productId: string): Promise<any> {
         const cart = await this.cartModel.findOne({ userId: userId });
+        if(!cart) {
+          throw new NotFoundException('Cart does not exist');
+        }
         const itemIndex = cart.items.findIndex((item) => item.productId == productId);
     
         if (itemIndex > -1) {
           cart.items.splice(itemIndex, 1);
+          this.recalculateCart(cart);
           return await cart.save();
+        }else{
+          throw new NotFoundException('Cannot find this product in cart');
         }
       }
 
