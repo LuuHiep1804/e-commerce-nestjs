@@ -6,6 +6,7 @@ import { ProductModule } from './product/product.module';
 import { CategoryModule } from './category/category.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { CartModule } from './cart/cart.module';
 import 'dotenv/config';
 
 @Module({
@@ -14,7 +15,8 @@ import 'dotenv/config';
     ProductModule,
     CategoryModule,
     UserModule,
-    AuthModule
+    AuthModule,
+    CartModule
   ],
   controllers: [AppController],
   providers: [AppService],
