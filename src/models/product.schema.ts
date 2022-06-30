@@ -33,3 +33,10 @@ export class Product {
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
+ProductSchema.pre(/^find/, async function (next: Function) {
+    this.populate({
+        path: 'category',
+        select: 'name'
+    })
+    next();
+})
