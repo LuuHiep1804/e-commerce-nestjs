@@ -28,6 +28,8 @@ export class CartController {
         return cart;
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.User)
     @Delete('/:id')
     async deleteCart(@Param('id') userId: string) {
         const cart = await this.cartService.deleteCart(userId);
