@@ -66,4 +66,12 @@ export class OrderService {
             return order;
         }
 
+        async findAllOrder(): Promise<Order[]> {
+            const orders = await this.orderModel.find({}).sort({ _id: -1});
+            if(!orders) {
+                throw new NotFoundException('Not found');
+            }
+            return orders;
+        }
+
 }
