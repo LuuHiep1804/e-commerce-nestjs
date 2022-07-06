@@ -1,19 +1,20 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { SchemaTypes } from "mongoose";
 import { Item } from './item.schema';
 
-@Schema()
+@Schema({ timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } })
 export class Order {
 
-    @Prop()
-    items: Item[];
-
+    
     @Prop({
         type: SchemaTypes.ObjectId,
         ref: 'User',
         required: true
     })
     userId: string;
+    
+    @Prop()
+    items: Item[];
 
     @Prop({
         required: true
@@ -42,3 +43,5 @@ export class Order {
     })
     status: string;
 }
+
+export const OrderSchema = SchemaFactory.createForClass(Order);
