@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Delete, UseGuards } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { Request } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
@@ -34,6 +34,30 @@ export class OrderController {
     async findAllOrder() {
         const orders = await this.orderService.findAllOrder();
         return orders;
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.Admin)
+    @Get('/by-user/:id')
+    async findOrderByUser(@Param('id') userId: string) {
+        const orders = await this.orderService.findOrderByUser(userId);
+        return orders;
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.Admin)
+    @Get('/:id')
+    async findSingleOrder(@Param('id') orderId: string) {
+        const order = await this.orderService.findSingleOrder(orderId);
+        return order;
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.Admin)
+    @Delete('/:id')
+    async deleteOrder(@Param('id') orderId: string) {
+        const order = await this.orderService.deleteOrder(orderId);
+        return order;
     }
 
 }

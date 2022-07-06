@@ -74,4 +74,28 @@ export class OrderService {
             return orders;
         }
 
+        async findOrderByUser(userId: string): Promise<Order[]> {
+            const orders = await this.orderModel.find({ userId: userId });
+            if(!orders) {
+                throw new NotFoundException('Not found');
+            }
+            return orders;
+        }
+
+        async findSingleOrder(orderId): Promise<Order> {
+            const order = await this.orderModel.findById(orderId);
+            if(!order) {
+                throw new NotFoundException('Order does not exist');
+            }
+            return order;
+        }
+
+        async deleteOrder(orderId): Promise<Order> {
+            const order = await this.orderModel.findByIdAndDelete(orderId);
+            if(!order) {
+                throw new NotFoundException('Order does not exist');
+            }
+            return order;
+        }
+
 }
