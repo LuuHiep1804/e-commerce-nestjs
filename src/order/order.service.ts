@@ -66,6 +66,26 @@ export class OrderService {
             return order;
         }
 
+        async cancelOrder(orderId: string): Promise<Order> {
+            const order = await this.orderModel.findById(orderId);
+            if(!order) {
+                throw new NotFoundException('Order does not exist');
+            }
+            if(order.status !== 'Not processed') {
+                throw new BadRequestException('Can not cancel order');
+            }else {
+                order.status = 'Cancelled';
+                await order.save();
+                for(let i = 0; i < order.items.length; i++) {
+                    let product = await this.productModel.findById(order.items[i].productId);
+                    let quantityInStock = Number(product.quantityInStock) + Number(order.items[i].quantity);
+                    product.quantityInStock = quantityInStock;
+                    await product.save();
+                }
+            }
+            return order;
+        }
+
         async findAllOrder(): Promise<Order[]> {
             const orders = await this.orderModel.find({}).sort({ _id: -1});
             if(!orders) {

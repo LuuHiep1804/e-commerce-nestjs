@@ -21,6 +21,15 @@ export class OrderController {
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.User)
+    @Put('/cancel/:id')
+    async cancel(@Param('id') orderId: string) {
+        const order = await this.orderService.cancelOrder(orderId);
+        return order;
+    }
+
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.Admin)
     @Put('/:id')
     async update(@Param('id') orderId: string, @Body() orderDTO: OrderDTO) {
