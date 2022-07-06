@@ -37,10 +37,10 @@ export class OrderService {
             //cập nhật lại tổng sản phẩm trong kho
             for(let i = 0; i < newOrder.items.length; i++) {
                 let product = await this.productModel.findById(newOrder.items[i].productId);
-                if(product.quantityInStock < newOrder.items[i].quantity) {
+                if(Number(product.quantityInStock) < Number(newOrder.items[i].quantity)) {
                     throw new BadRequestException('Not enough products quantity');
                 }
-                let quantityInStock = product.quantityInStock - newOrder.items[i].quantity;
+                let quantityInStock = Number(product.quantityInStock) - Number(newOrder.items[i].quantity);
                 product.quantityInStock = quantityInStock;
                 await product.save();
             }
@@ -58,7 +58,7 @@ export class OrderService {
             if(status === 'Cancelled' && checkAvailable.status !== 'Cancelled') {
                 for(let i = 0; i < order.items.length; i++) {
                     let product = await this.productModel.findById(order.items[i].productId);
-                    let quantityInStock = product.quantityInStock + order.items[i].quantity;
+                    let quantityInStock = Number(product.quantityInStock) + Number(order.items[i].quantity);
                     product.quantityInStock = quantityInStock;
                     await product.save();
                 }
