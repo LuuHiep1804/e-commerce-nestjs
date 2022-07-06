@@ -55,7 +55,7 @@ export class CartService {
             const newItem = {
               productId: productId,
               name: product.name,
-              quantity: quantity,
+              quantity: Number(quantity),
               price: product.price
             }
             const subTotalPrice = quantity * newItem.price;
