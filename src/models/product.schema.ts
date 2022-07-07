@@ -30,6 +30,11 @@ export class Product {
     })
     category: Category;
 
+    @Prop({
+        default: false
+    })
+    featured: boolean;
+
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

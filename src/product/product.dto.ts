@@ -8,4 +8,5 @@ export class CreateProductDTO {
     image: string;
     title: string;
     category: Category;
+    featured: boolean;
 }
