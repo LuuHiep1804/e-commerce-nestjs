@@ -4,4 +4,5 @@ export class FilterProductDTO {
     search: string;
     category: string;
     price: number;
+    featured: boolean;
 }
