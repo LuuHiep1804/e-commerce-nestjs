@@ -10,19 +10,27 @@ export class ProductService {
     constructor(@InjectModel('Product') private readonly productModel: Model<Product>) {}
 
     async getFilteredProducts(filterProductDTO: FilterProductDTO): Promise<Product[]> {
-        const {category, search} = filterProductDTO;
-        let products = await this.findAllProducts();
-        if(search) {
-            products = products.filter((product) => 
-                product.name.includes(search) ||
-                product.description.includes(search)
-            );
-        }
-
+        const {category, search, price} = filterProductDTO;
+        let categoryQuery = {};
+        let priceQuery = {};
+        let searchQuery = {};
+        //category
         if(category) {
-            products = products.filter(product => product.category.name === category);
+            categoryQuery = {category: {_id: category}};
         }
-
+        //price
+        if(price) {
+            priceQuery = {price: {$lte: price}};
+        }
+        //search by name and description
+        if(search) {
+            searchQuery = {$or: [{name: new RegExp(search)}, {description: new RegExp(search)}]}
+        }
+        const queries = {...categoryQuery, ...priceQuery, ...searchQuery};
+        const products = await this.productModel
+            .find(queries)
+            .populate('category')
+            .sort({price: -1});
         return products;
     }
 
