@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
+import { PaymentModule } from './payment/payment.module';
 import 'dotenv/config';
 
 @Module({
@@ -18,7 +19,8 @@ import 'dotenv/config';
     UserModule,
     AuthModule,
     CartModule,
-    OrderModule
+    OrderModule,
+    PaymentModule
   ],
   controllers: [AppController],
   providers: [AppService],
