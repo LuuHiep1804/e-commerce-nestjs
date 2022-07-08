@@ -1,6 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from 'src/auth/enums/role.enum';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guard/roles.guard';
 import { Category } from 'src/types/category';
 import { CategoryDTO } from './category.dto';
 
@@ -16,6 +20,8 @@ export class CategoryService {
         return await this.categoryModel.findById(id);
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.Admin)
     async create(categoryDTO: CategoryDTO): Promise<Category> {
         const createdCategory = await this.categoryModel.create({
             ...categoryDTO
@@ -24,6 +30,8 @@ export class CategoryService {
         return createdCategory;
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.Admin)
     async update(id: string, categoryDTO: CategoryDTO): Promise<Category> {
         const updateCategory = await this.categoryModel.findByIdAndUpdate(id, categoryDTO, {new: true});
         if(!updateCategory) {
@@ -32,6 +40,8 @@ export class CategoryService {
         return updateCategory;
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(Role.Admin)
     async delete(id: string): Promise<any> {
         const deleteCategory = await this.categoryModel.findByIdAndDelete(id);
         if(!deleteCategory) {
